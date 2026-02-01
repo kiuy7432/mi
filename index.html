@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Noto+Sans+JP:wght@300;500&family=Noto+Serif+JP:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #F9F7F2; 
+            --main-text: #4A4643; 
+            --accent: #B89F77; 
+            --card-bg: #FFFFFF;
+            --shadow: rgba(74, 70, 67, 0.08);
+            --group-bg: rgba(184, 159, 119, 0.05);
+        }
+        
+        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--main-text); line-height: 1.8; }
+
+        header { padding: 80px 5% 40px; text-align: center; }
+        .logo { font-family: 'Cinzel', serif; font-size: 1.8rem; letter-spacing: 0.2em; color: var(--accent); }
+        .sub-copy { font-size: 0.9rem; opacity: 0.7; margin-top: 10px; }
+
+        /* --- セレクトメニュー固定セクション --- */
+        .filter-section { position: sticky; top: 0; z-index: 1000; background: rgba(249, 247, 242, 0.95); backdrop-filter: blur(10px); padding: 15px 5%; border-bottom: 1px solid rgba(184, 159, 119, 0.1); }
+        .filter-inner { max-width: 600px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .filter-label { font-size: 0.85rem; font-weight: 500; white-space: nowrap; color: var(--main-text); letter-spacing: 0.05em; }
+        .industry-select { flex: 1; max-width: 350px; padding: 10px 20px; font-size: 0.9rem; border: 2px solid #E5E0D8; background: var(--card-bg); cursor: pointer; outline: none; appearance: none; box-shadow: 0 4px 10px var(--shadow); color: var(--main-text); border-radius: 0 !important; }
+
+        .container { width: 96%; max-width: 1800px; margin: 0 auto; }
+        .industry-group { margin-bottom: 60px; padding: 80px 4%; background: var(--group-bg); scroll-margin-top: 100px; border-radius: 0 !important; }
+        .group-header { text-align: center; margin-bottom: 60px; }
+        .group-title { font-family: 'Cinzel', serif; font-size: 1.6rem; letter-spacing: 0.2em; color: var(--accent); }
+        .group-subtitle { font-size: 0.8rem; opacity: 0.6; display: block; margin-top: 5px; letter-spacing: 0.1em; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; width: 100%; }
+
+        /* --- 通常カードデザイン --- */
+        .card { background: var(--card-bg); overflow: hidden; transition: 0.4s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: 0 10px 30px var(--shadow); width: 100%; border-radius: 0 !important; }
+        .info-wrap { padding: 30px; }
+        .cat-tag { font-size: 0.7rem; color: var(--accent); font-weight: 700; display: block; letter-spacing: 0.1em; margin-bottom: 8px; }
+        .title-en { font-family: 'Noto Serif JP', serif; font-size: 1.1rem; font-weight: 500; display: block; color: var(--main-text); }
+
+        /* --- 動画カード専用デザイン（ゴールド背景） --- */
+        .card[data-type="video"] { 
+            grid-column: 1 / -1; display: flex; flex-direction: column; cursor: pointer; width: 100%; max-width: 900px; margin: 0 auto 20px;
+            background-color: var(--accent); border: none; color: #FFFFFF;
+        }
+        .card[data-type="video"]:hover { transform: translateY(-7px); box-shadow: 0 25px 50px rgba(74, 70, 67, 0.2); }
+        .card[data-type="video"] .media-wrap { width: 100%; position: relative; aspect-ratio: 21 / 9; }
+        .card[data-type="video"] .info-wrap { width: 100%; padding: 30px 40px; text-align: center; }
+        .card[data-type="video"] .title-en { color: #FFFFFF; }
+        .card[data-type="video"] .media-wrap::after {
+            content: '▶'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 70px; height: 70px; background: rgba(255, 255, 255, 0.95); color: var(--accent);
+            display: flex; justify-content: center; align-items: center; border-radius: 50% !important;
+            font-size: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: 0.3s ease;
+        }
+
+        .tags-row { display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .card[data-type="video"] .cat-tag { color: rgba(255, 255, 255, 0.9); margin-bottom: 0; }
+        .feature-tag { font-size: 0.7rem; color: var(--accent); background-color: #FFFFFF; padding: 3px 12px; font-weight: 700; letter-spacing: 0.05em; }
+
+        .media-wrap { width: 100%; overflow: hidden; position: relative; }
+        .media-wrap img, .media-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        footer { background: #EDE8E1; padding: 100px 5% 60px; text-align: center; }
+        .contact-btn { display: inline-block; padding: 20px 60px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 500; transition: 0.3s; letter-spacing: 0.1em; border-radius: 0 !important; }
+
+        /* --- モーダル（PC・基本設定） --- */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; backdrop-filter: blur(10px); }
+        .modal.show { display: flex; }
+        .modal-content { background: #000; width: 100%; max-width: 1100px; overflow: hidden; position: relative; border-radius: 0 !important; }
+        .close-btn { position: absolute; top: 20px; right: 25px; cursor: pointer; font-size: 2.5rem; z-index: 10; color: #fff; line-height: 1; }
+        .modal-media { width: 100%; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; }
+        .modal-media video { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+        /* --- レスポンシブ設定 --- */
+        @media (max-width: 1100px) {
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 30px; }
+            .card[data-type="video"] { max-width: 100%; }
+            .card[data-type="video"] .media-wrap { aspect-ratio: 16 / 9; }
+        }
+
+        @media (max-width: 768px) { 
+            .grid { grid-template-columns: 1fr; } 
+            .filter-inner { gap: 10px; }
+            .filter-label { font-size: 0.75rem; }
+
+            /* ポップアップを全画面仕様に */
+            .modal { padding: 0; } 
+            .modal-content { 
+                max-width: 100%; 
+                width: 100%; 
+                height: 100%; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center;
+                background: #000;
+            }
+            .modal-media {
+                width: 100%;
+                height: auto;
+                aspect-ratio: auto;
+            }
+            .close-btn { top: 15px; right: 20px; font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header id="page-top">
+    <div class="logo">Portfolio</div>
+    <p class="sub-copy">制作実績</p>
+</header>
+
+<div class="filter-section">
+    <div class="filter-inner">
+        <span class="filter-label">ジャンルを選択</span>
+        <select id="industry-filter" class="industry-select">
+            <option value="">すべて見る</option>
+            <option value="beauty">整体・エステ・美容</option>
+            <option value="school">教育・スクール</option>
+            <option value="life">生活サービス・住宅</option>
+            <option value="company">企業・コンサルティング</option>
+            <option value="restaurant">飲食店・ホテル</option>
+            <option value="clinic">医院・クリニック</option>
+        </select>
+    </div>
+</div>
+
+<main class="container" id="main-content">
+    <section class="industry-group" id="beauty">
+        <div class="group-header">
+            <h2 class="group-title">BODY CARE</h2>
+            <span class="group-subtitle">整体・エステ・美容</span>
+        </div>
+        <div class="grid">
+            <div class="card" data-type="video">
+                <div class="media-wrap"><video src="image/seitai-mv.mp4" poster="image/hf_20260129_010528_b799a0e1-4730-4b55-82cd-ca915e34c02b.png" muted playsinline></video></div>
+                <div class="info-wrap"><div class="tags-row"><span class="cat-tag">MOVIE</span><span class="feature-tag">ナレーション付き</span></div><span class="title-en">整体・エステ・美容 PR動画</span></div>
+            </div>
+            <div class="card" data-type="website">
+                <div class="media-wrap"><img src="image/hf_20260126_024927_4c5770bc-a500-4025-b50c-e246bdd1bf59.png"></div>
+                <div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">整体院 ホームページ</span></div>
+            </div>
+            <div class="card" data-type="website">
+                <div class="media-wrap"><img src="image/hf_20260131_031738_71faa2a2-b79f-40aa-96ed-4dc69585a25a.png"></div>
+                <div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">エステ ホームページ</span></div>
+            </div>
+            <div class="card" data-type="website">
+                <div class="media-wrap"><img src="image/hf_20260131_031923_5f05efea-3fa1-445d-b5d8-32ad520a7f4d.png"></div>
+                <div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">化粧品 ホームページ</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="industry-group" id="school">
+        <div class="group-header"><h2 class="group-title">SCHOOL</h2><span class="group-subtitle">教育・スクール</span></div>
+        <div class="grid">
+            <div class="card" data-type="video">
+                <div class="media-wrap"><video src="image/school-mv.mp4" poster="image/hf_20260128_003257_cc17ecf1-0c36-44c6-87f4-ffc81a1f4847.png" muted playsinline></video></div>
+                <div class="info-wrap"><div class="tags-row"><span class="cat-tag">MOVIE</span><span class="feature-tag">ナレーション付き</span></div><span class="title-en">教育・スクール PR動画</span></div>
+            </div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260130_063919_7dfe9cab-73e0-4918-a305-ad520ac72a8f.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">学習塾 ホームページ</span></div></div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260130_065346_10aa93ec-f5cf-4bff-ac61-64d66873db54.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">ヨガスタジオ ホームページ</span></div></div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260130_064842_eccb00ee-1d0f-4257-9341-928f770b4043.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">保育園 ホームページ</span></div></div>
+        </div>
+    </section>
+
+    <section class="industry-group" id="life">
+        <div class="group-header"><h2 class="group-title">LIFE</h2><span class="group-subtitle">生活サービス・住宅</span></div>
+        <div class="grid">
+            <div class="card" data-type="video">
+                <div class="media-wrap"><video src="image/life-mv.mp4" poster="image/hf_20260130_053226_07f75043-77dd-4cae-a34f-615f8e1a05d5.png" muted playsinline></video></div>
+                <div class="info-wrap"><div class="tags-row"><span class="cat-tag">MOVIE</span><span class="feature-tag">ナレーション付き</span></div><span class="title-en">生活サービス・住宅 PR動画</span></div>
+            </div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260126_025307_bdb90e63-722a-4309-9f41-2da77c47ab5a.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">家事代行 ホームページ</span></div></div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260131_025647_dee5eb6f-348d-4f7f-a71c-49d015f154b8.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">介護 ホームページ</span></div></div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260131_034548_65ea074f-9978-4935-8a73-fe6e87ed03a5.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">住宅 ホームページ</span></div></div>
+        </div>
+    </section>
+
+    <section class="industry-group" id="company">
+        <div class="group-header"><h2 class="group-title">COMPANY</h2><span class="group-subtitle">企業・コンサルティング</span></div>
+        <div class="grid">
+            <div class="card" data-type="video">
+                <div class="media-wrap"><video src="image/company-mv.mp4" poster="image/hf_20260131_012454_bf8b0e6a-1a86-419a-9c8e-74f4ce2fe961.png" muted playsinline></video></div>
+                <div class="info-wrap"><div class="tags-row"><span class="cat-tag">MOVIE</span><span class="feature-tag">ナレーション付き</span></div><span class="title-en">企業・コンサルティング PR動画</span></div>
+            </div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260131_024236_54c1b015-d665-41f6-b3ea-856b541f096a.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">企業 ホームページ</span></div></div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260131_023518_62726f11-5d15-4369-b2ef-10b39020cd35.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">士業 ホームページ</span></div></div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260131_023619_8ae8651c-3156-4429-a569-0c692083e2ed.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">製造業 ホームページ</span></div></div>
+        </div>
+    </section>
+
+    <section class="industry-group" id="restaurant">
+        <div class="group-header"><h2 class="group-title">RESTAURANT</h2><span class="group-subtitle">飲食店・ホテル</span></div>
+        <div class="grid">
+            <div class="card" data-type="video">
+                <div class="media-wrap"><video src="image/restaurant-mv.mp4" poster="image/hf_20260131_035825_0b034fb6-9df1-46f5-a91a-db7eabb045de.png" muted playsinline></video></div>
+                <div class="info-wrap"><div class="tags-row"><span class="cat-tag">MOVIE</span><span class="feature-tag">ナレーション付き</span></div><span class="title-en">飲食店・ホテル PR動画</span></div>
+            </div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260131_051902_ac975bff-5f71-469b-b694-16159900e718.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">飲食店 ホームページ</span></div></div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260131_052843_16efdb0d-8786-4d8c-a693-9b58f77b1ebb.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">ホテル ホームページ</span></div></div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260131_052028_2c1c74a8-4c41-447f-98f2-712db546e074.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">旅館 ホームページ</span></div></div>
+        </div>
+    </section>
+
+    <section class="industry-group" id="clinic">
+        <div class="group-header"><h2 class="group-title">CLINIC</h2><span class="group-subtitle">医院・クリニック</span></div>
+        <div class="grid">
+            <div class="card" data-type="video">
+                <div class="media-wrap"><video src="image/shika-mv.mp4" poster="image/hf_20260127_035329_df60523b-1eb0-4b7d-8669-991030455dba.png" muted playsinline></video></div>
+                <div class="info-wrap"><div class="tags-row"><span class="cat-tag">MOVIE</span><span class="feature-tag">ナレーション付き</span></div><span class="title-en">医院・クリニック PR動画</span></div>
+            </div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/shika-hp1.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">歯医者 ホームページ</span></div></div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260131_022100_50648f7b-21e3-4650-9b93-4cb08ee75e96.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">美容クリニック ホームページ</span></div></div>
+            <div class="card" data-type="website"><div class="media-wrap"><img src="image/hf_20260131_021509_26080e6c-582b-4133-bf9d-7403c52ae95e.png"></div><div class="info-wrap"><span class="cat-tag">HOME PAGE</span><span class="title-en">小児科 ホームページ</span></div></div>
+        </div>
+    </section>
+</main>
+
+
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div class="modal-media" id="modal-body"></div>
+    </div>
+</div>
+
+<script>
+    // 1. 並び替え
+    window.addEventListener('DOMContentLoaded', () => {
+        const filterSelect = document.getElementById('industry-filter');
+        const container = document.getElementById('main-content');
+        const options = Array.from(filterSelect.options);
+        options.forEach(option => {
+            const sectionId = option.value;
+            if (sectionId) {
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) container.appendChild(targetSection);
+            }
+        });
+    });
+
+    // 2. スクロール
+    const filterSelect = document.getElementById('industry-filter');
+    filterSelect.addEventListener('change', () => {
+        const targetId = filterSelect.value;
+        if (targetId) {
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+
+    // 3. モーダル
+    const modal = document.getElementById('modal');
+    const modalBody = document.getElementById('modal-body');
+
+    document.querySelectorAll('.card[data-type="video"]').forEach(card => {
+        card.addEventListener('click', () => {
+            const videoEl = card.querySelector('video');
+            if(videoEl) {
+                const src = videoEl.src;
+                modalBody.innerHTML = `<video src="${src}" controls autoplay></video>`;
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    });
+
+    function closeModal() {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+        modalBody.innerHTML = '';
+    }
+
+    // ★スマホ版全画面対応の「背景タップで閉じる」強化版ロジック
+    modal.addEventListener('click', (event) => {
+        // 1. 一番外側の .modal 自体をタップした場合
+        // 2. スマホ全画面時に画面を覆っている .modal-content 自体をタップした場合
+        // 3. ビデオを包んでいる枠をタップした場合
+        // ※ただし、videoタグ（実際の動画部分）をタップした時は閉じないようにする
+        const isClickableArea = 
+            event.target === modal || 
+            event.target.classList.contains('modal-content') || 
+            event.target.id === 'modal-body';
+
+        if (isClickableArea) {
+            closeModal();
+        }
+    });
+</script>
+
+</body>
+</html>

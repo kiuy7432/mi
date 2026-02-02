@@ -172,7 +172,7 @@
 
     <p class="lead">
       下記内容をご入力の上、送信をお願いします。<br>
-      ※こちらは案内代行ため、資料はサービス提供元から送付します。
+      ※こちらは案内代行のため、資料はサービス提供元から送付します。
     </p>
 
     <form id="requestForm"
@@ -231,8 +231,12 @@
       </div>
 
       <button type="submit" id="submitBtn">送信する</button>
+      <div class="subnote" id="remainNote"></div>
 
       <div class="done" id="done">送信しました。ありがとうございました。</div>
+      <div class="limit" id="limit">
+      エラー
+      </div>
     </form>
 
     <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
@@ -279,11 +283,11 @@
 
     const remain = Math.max(0, MAX_SUBMIT - nowArr.length);
     if (remain > 0) {
-      remainNote.textContent = `（24時間以内 残り ${remain} 回送信できます）`;
+      remainNote.textContent = ``;
       limit.style.display = 'none';
       submitBtn.disabled = false;
     } else {
-      remainNote.textContent = `（24時間以内の送信上限に達しています）`;
+      remainNote.textContent = ``;
       limit.style.display = 'block';
       submitBtn.disabled = true; // ボタンも無効化
     }
